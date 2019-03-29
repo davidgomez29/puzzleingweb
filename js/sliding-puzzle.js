@@ -168,8 +168,14 @@ $(function () {
 				}
 
 			},
+
+
+
 			stop: function (e, ui) {
-				var current = getPosition(ui.helper);
+				
+
+				var current = getPosition(ui.helper),
+				correctPieces = 0;
 				if (current.top === empty.top && current.left === empty.left)
 				{
 					empty.top = previous.top;
@@ -178,7 +184,39 @@ $(function () {
 					empty.right = previous.left + pieceW;
 				}
 
-				
+				//sabe cuando se acabo el puzzle
+				$.each(positions, function (i) {
+					var currentPiece = $("#" + (i + 1)),
+					currentPosition = getPosition(currentPiece);
+
+					if (positions[i].top === currentPosition.top && positions[i].left === currentPosition.left) {
+						correctPieces++;
+					}});
+
+					if (correctPieces === positions.length) 
+					{
+						clearInterval(timer);
+						$("<p/>",{ text: "Felicitaciones, Has resuelto el puzzle!"
+						}).appendTo("#ui");
+					}
+
+					//guarda mejores tiempos
+					var totalSeconds = (currentTime.hours * 60 * 60) + (currentTime.minutes * 60) + currentTime.seconds;
+					if (localStorage.getItem("puzzleBestTime")) 
+					{
+						var bestTime = localStorage.getItem("puzzleBestTime");
+
+					if (totalSeconds < bestTime) 
+					{
+					    localStorage.setItem("puzzleBestTime", totalSeconds);
+						$("<p/>", { text: "Has obtenido un nuevo mejor tiempo!"}).appendTo("#ui");
+					}
+					}else{
+					localStorage.setItem("puzzleBestTime", totalSeconds);
+					$("<p/>", { text: "Has obtenido un nuevo mejor tiempo!" }).appendTo("#ui");
+					}
+					
+					//
 
 			}
 
